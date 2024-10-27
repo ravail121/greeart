@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\TradingBotController;
+use App\Http\Controllers\admin\AddonsController;
+use App\Http\Controllers\user\ProfileController;
+use App\Http\Controllers\TestController;
 
 Route::group(['prefix' => 'admin', 'namespace' => 'admin', 'middleware' => ['auth', 'admin', 'permission', 'default_lang']], function () {
 
@@ -10,80 +15,81 @@ Route::group(['prefix' => 'admin', 'namespace' => 'admin', 'middleware' => ['aut
     });
 
     Route::group(['group' => 'dashboard'], function () {
-        Route::get('test-bot', 'TradingBotController@botOrder')->name('botOrder');
-        Route::get('dashboard', 'DashboardController@adminDashboard')->name('adminDashboard');
-        Route::get('dashboard-check', 'DashboardController@adminDashboardCheck')->name('adminDashboardCheck');
-        Route::get('pending-withdrawals', 'TransactionController@adminPendingWithdrawal')->name('adminPendingWithdrawals');
+        Route::get('test-bot', [TradingBotController::class, 'botOrder'])->name('botOrder');
+        Route::get('dashboard', [DashboardController::class, 'adminDashboard'])->name('adminDashboard');
+        Route::get('dashboard-check', [DashboardController::class, 'adminDashboardCheck'])->name('adminDashboardCheck');
+        Route::get('pending-withdrawals', [TransactionController::class, 'adminPendingWithdrawal'])->name('adminPendingWithdrawals');
     });
-    Route::get('earning-report', 'DashboardController@adminEarningReport')->name('adminEarningReport');
+    Route::get('earning-report', [DashboardController::class, 'adminEarningReport'])->name('adminEarningReport');
 
-    // user management
+    // User management
     require base_path('routes/link/userManagement.php');
 
-    // coin management
+    // Coin management
     require base_path('routes/link/coinManagement.php');
 
-    // wallet deposit withdrawal management
+    // Wallet deposit withdrawal management
     require base_path('routes/link/walletManagement.php');
 
-    // general settings
+    // General settings
     require base_path('routes/link/generalSettings.php');
 
-    // landing settings
+    // Landing settings
     require base_path('routes/link/landingManagement.php');
 
-    // fiat management
+    // Fiat management
     require base_path('routes/link/fiatManagement.php');
 
-    // trade management
+    // Trade management
     require base_path('routes/link/tradeManagement.php');
 
-    // trade management
+    // Role management
     require base_path('routes/link/roleManagement.php');
 
-    // staking management
+    // Staking management
     require base_path('routes/link/stakingManagement.php');
 
-    // gift card
+    // Gift card
     require base_path('routes/link/gift_card.php');
 
-    // future trade management
+    // Future trade management
     require base_path('routes/link/futureTradeManagement.php');
 
-   // notification
+    // Notification
     Route::group(['group' => 'notify'], function () {
-        Route::get('send-notification', 'DashboardController@sendNotification')->name('sendNotification');
-        Route::post('send-notification-process', 'DashboardController@sendNotificationProcess')->name('sendNotificationProcess');
+        Route::get('send-notification', [DashboardController::class, 'sendNotification'])->name('sendNotification');
+        Route::post('send-notification-process', [DashboardController::class, 'sendNotificationProcess'])->name('sendNotificationProcess');
     });
+
+    // Email
     Route::group(['group' => 'email'], function () {
-        Route::get('send-email', 'DashboardController@sendEmail')->name('sendEmail');
-        Route::get('clear-email', 'DashboardController@clearEmailRecord')->name('clearEmailRecord');
-        Route::post('send-email-process', 'DashboardController@sendEmailProcess')->name('sendEmailProcess')->middleware('check_demo');
+        Route::get('send-email', [DashboardController::class, 'sendEmail'])->name('sendEmail');
+        Route::get('clear-email', [DashboardController::class, 'clearEmailRecord'])->name('clearEmailRecord');
+        Route::post('send-email-process', [DashboardController::class, 'sendEmailProcess'])->name('sendEmailProcess')->middleware('check_demo');
     });
 
 });
 
 Route::group(['middleware'=> ['auth', 'lang']], function () {
-    Route::get('/send-sms-for-verification', 'user\ProfileController@sendSMS')->name('sendSMS');
-    Route::get('test', 'TestController@index')->name('test');
+    Route::get('/send-sms-for-verification', [ProfileController::class, 'sendSMS'])->name('sendSMS');
+    Route::get('test', [TestController::class, 'index'])->name('test');
     Route::group(['middleware'=>'check_demo'], function() {
-        Route::post('/user-profile-update', 'user\ProfileController@userProfileUpdate')->name('userProfileUpdate');
-        Route::post('/upload-profile-image', 'user\ProfileController@uploadProfileImage')->name('uploadProfileImage');
-        Route::post('change-password-save', 'user\ProfileController@changePasswordSave')->name('changePasswordSave');
-        Route::post('/phone-verify', 'user\ProfileController@phoneVerify')->name('phoneVerify');
+        Route::post('/user-profile-update', [ProfileController::class, 'userProfileUpdate'])->name('userProfileUpdate');
+        Route::post('/upload-profile-image', [ProfileController::class, 'uploadProfileImage'])->name('uploadProfileImage');
+        Route::post('change-password-save', [ProfileController::class, 'changePasswordSave'])->name('changePasswordSave');
+        Route::post('/phone-verify', [ProfileController::class, 'phoneVerify'])->name('phoneVerify');
     });
 });
 
-Route::get('/invocie', function(){
+Route::get('/invoice', function(){
     return view('email.template-three.index');
-    });
+});
 
-Route::group(['prefix' => 'admin', 'namespace' => 'admin', 'middleware' => ['auth', 'admin','default_lang']], function () {
-
-    // addon settings
+// Addon settings
+Route::group(['prefix' => 'admin', 'namespace' => 'admin', 'middleware' => ['auth', 'admin', 'default_lang']], function () {
     Route::group(['group' => 'addons_settings'], function () {
-        Route::get('addons-list', 'AddonsController@addonsLists')->name('addonsLists');
-        Route::get('addons-settings', 'AddonsController@addonsSettings')->name('addonsSettings');
-        Route::post('addons-settings-save', 'AddonsController@saveAddonsSettings')->name('saveAddonsSettings')->middleware('check_demo');
+        Route::get('addons-list', [AddonsController::class, 'addonsLists'])->name('addonsLists');
+        Route::get('addons-settings', [AddonsController::class, 'addonsSettings'])->name('addonsSettings');
+        Route::post('addons-settings-save', [AddonsController::class, 'saveAddonsSettings'])->name('saveAddonsSettings')->middleware('check_demo');
     });
 });

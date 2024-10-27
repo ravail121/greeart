@@ -14,6 +14,7 @@ use Laravel\Passport\Console\KeysCommand;
 use Laravel\Passport\Console\ClientCommand;
 use Laravel\Passport\Console\InstallCommand;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        URL::forceScheme("https");
         Schema::defaultStringLength(191);
 
         Validator::extend('strong_pass', function($attribute, $value, $parameters, $validator) {
@@ -55,7 +57,7 @@ class AppServiceProvider extends ServiceProvider
         if(DB::connection()->getDatabaseName()) {
             if (Schema::hasTable('admin_settings')) {
                 $adm_setting = allsetting();
-                define('ADMIN_SETTINGS_ARRAY', $adm_setting);
+                // define('ADMIN_SETTINGS_ARRAY', $adm_setting);
 
                 $capcha_site_key = isset($adm_setting['NOCAPTCHA_SITEKEY']) ? $adm_setting['NOCAPTCHA_SITEKEY'] : env('NOCAPTCHA_SITEKEY');
                 $capcha_secret_key = isset($adm_setting['NOCAPTCHA_SECRET']) ? $adm_setting['NOCAPTCHA_SECRET'] : env('NOCAPTCHA_SECRET');
