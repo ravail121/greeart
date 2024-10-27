@@ -1,49 +1,34 @@
-FROM php:8.0-fpm
+FROM php:7.4-fpm
 
-# Install dockerize so we can wait for containers to be ready
-#ENV DOCKERIZE_VERSION 0.6.1
+# Arguments defined in docker-compose.yml
+ARG user
+ARG uid
 
-#RUN curl -s -f -L -o /tmp/dockerize.tar.gz https://github.com/jwilder/dockerize/releases/download/v$DOCKERIZE_VERSION/dockerize-linux-amd64-v$DOCKERIZE_VERSION.tar.gz \
-#    && tar -C /usr/local/bin -xzvf /tmp/dockerize.tar.gz \
-#    && rm /tmp/dockerize.tar.gz
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip
 
-# Install Composer
-ENV COMPOSER_VERSION 2.1.5
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer --version=$COMPOSER_VERSION
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Install nodejs
-#RUN curl -sL https://deb.nodesource.com/setup_14.x | bash
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-        libz-dev \
-        libpq-dev \
-        libjpeg-dev \
-        libpng-dev \
-        libssl-dev \
-        libzip-dev \
-        unzip \
-        zip \
-        nodejs \
-    && apt-get clean \
-    && pecl install redis \
-    && docker-php-ext-configure gd \
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install \
-        gd \
-        exif \
-        opcache \
-        pdo_mysql \
-        pdo_pgsql \
-        pgsql \
-        pcntl \
-        zip \
-    && docker-php-ext-enable redis \
-    && rm -rf /var/lib/apt/lists/*;
+# Create system user to run Composer and Artisan Commands
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
 
-COPY . .
+# Set working directory
+WORKDIR /var/www
 
-WORKDIR /usr/src/app
-EXPOSE 7001
-RUN chown -R www-data:www-data .
+USER $user
