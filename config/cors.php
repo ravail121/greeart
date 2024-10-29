@@ -31,7 +31,8 @@ return [
     /*
      * Matches the request origin. `['*']` allows all origins. Wildcards can be used, eg `*.mydomain.com`
      */
-    'allowed_origins' => explode(',', env('FRONTEND_URL', '*', '5.196.64.87')),
+    // 'allowed_origins' => explode(',', env('FRONTEND_URL', '*', '5.196.64.87')),
+    'allowed_origins' => ['*'],
 
     /*
      * Patterns that can be used with `preg_match` to match the origin.
