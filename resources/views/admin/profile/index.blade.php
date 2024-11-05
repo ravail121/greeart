@@ -271,7 +271,7 @@
                                                                 <div class="col-12 text-center">
                                                                     {{-- <img src="{{ $qrcode }}" class="img-fluid" alt=""> --}}
                                                                     <div class="d-inline-block" style="border: 10px solid white">
-                                                                        @if(!empty($qrcode))  {!! QrCode::size(200)->generate($qrcode); !!} @endif
+                                                                        @if(!empty($qrcode))  {!! QrCode::size(200)->generate($qrcode) !!} @endif
                                                                     </div>
                                                                 </div>
                                                                 <div class="col-12 mt-4 text-center">

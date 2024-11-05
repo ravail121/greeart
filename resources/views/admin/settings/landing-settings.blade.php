@@ -13,10 +13,6 @@
                             <a class="nav-link @if(isset($tab) && $tab=='hero') active @endif" data-toggle="tab"
                             href="#hero">{{__('Header Setting')}}</a>
                         </li>
-                        {{-- <li>
-                            <a class="nav-link @if(isset($tab) && $tab=='advertisement') active @endif" data-toggle="tab"
-                            href="#advertisement">{{__('Advertisement')}}</a>
-                        </li> --}}
                         <li>
                             <a class="nav-link @if(isset($tab) && $tab=='advertisement') active @endif" data-toggle="tab"
                             href="#advertisement">{{__('Advertisement')}}</a>
@@ -59,13 +55,9 @@
                                         id="contact" role="tabpanel" aria-labelledby="header-setting-tab">
                                     @include('admin.settings.landing.customization')
                                 </div>
-                                {{-- <div class="tab-pane fade  @if(isset($tab) && $tab=='advertisement')show active @endif "
-                                        id="advertisement" role="tabpanel" aria-labelledby="header-setting-tab">
-                                    @include('admin.settings.landing.advertisement')
-                                </div> --}}
                                 <div class="tab-pane fade  @if(isset($tab) && $tab=='advertisement')show active @endif "
                                         id="advertisement" role="tabpanel" aria-labelledby="header-setting-tab">
-                                    @include('admin.settings.landing.new_advertisement')
+                                    @include('admin.settings.landing.advertisement')
                                 </div>
                                 <div class="tab-pane fade  @if(isset($tab) && $tab=='features')show active @endif "
                                         id="features" role="tabpanel" aria-labelledby="header-setting-tab">
@@ -117,37 +109,6 @@
         {
             $('#display_text').show();
             $('#display_link').hide();
-        }
-    });
-
-    var drEvent = $('.dropify').dropify();
-
-    drEvent.on('dropify.beforeClear', function(event, element){
-        return confirm("{{ __('Do you really want to delete this image?') }}");
-    });
-    drEvent.on('dropify.afterClear', function(event, element){
-        let name = element.element.name;
-        if(name){
-            $.get(
-                '{{ route("removeAdminImageSettings") }}?slug='+name,
-                (response) => {
-                    if(response.success || false)
-                    {
-                        VanillaToasts.create({
-                            text: response.message,
-                            backgroundColor: "linear-gradient(135deg, #73a5ff, #5477f5)",
-                            type: 'success',
-                            timeout: 40000
-                        });
-                    }else{
-                        VanillaToasts.create({
-                            text: response.message,
-                            type: 'warning',
-                            timeout: 40000
-                        });
-                    }
-                }
-            )
         }
     });
 </script>
